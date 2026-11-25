@@ -244,16 +244,20 @@ const I={
  star:sv('<path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>')
 };
 
+function plan(){
+ const ex=(name,sets=3,reps='8–12')=>({id:uid(),name,sets,reps});
+ return[
+  {id:uid(),name:'Full Body 1',day:1,exercises:[ex('Dumbbell Incline (15° Bench)'),ex('2 x Dumbbell Split Squat'),ex('Neutral Grip Lat Pulldown'),ex('Prone Lying Hamstring Curl'),ex('Chest Press Machine'),ex('Row Machine'),ex('Crunches',3,'15'),ex('Dumbbell External Rotation',3,'12–15')]},
+  {id:uid(),name:'Full Body Stretch Strength',day:3,exercises:[ex('1x Dumbbell ATG Split Squat'),ex('ATG Dumbbell Row'),ex('Bent Over 2x Dumbbell to Stand Upright'),ex('Incline Neutral Grip Press (45° Bench)'),ex('Seated Chest Fly Machine'),ex('Dumbbell Pull Over'),ex('Crunches / Ab Mat Sit Up',3,'15'),ex('Dumbbell Side Bend',3,'12–15')]},
+  {id:uid(),name:'Full Body 2',day:5,exercises:[ex('Dumbbell Incline (15° Bench)'),ex('Leg Press'),ex('Neutral Grip Lat Pulldown'),ex('Barbell Hip Thrust'),ex('Chest Press Machine'),ex('Row Machine'),ex('Crunches',3,'15'),ex('Dumbbell External Rotation',3,'12–15')]},
+  {id:uid(),name:'Actor Accessory',day:6,exercises:[ex('Single Leg Squat'),ex('Seated Good Morning'),ex('Dumbbell Zottman Curl'),ex('Tricep Rope Extension'),ex('Dumbbell Lateral Raise',3,'12–15'),ex('Trap Y Raise',3,'12–15'),ex('L Sit',3,'hold'),ex('Tricep Bar Pushdown'),ex('Dumbbell Incline Bicep Curl')]}
+ ];
+}
 function defaults(){
  const t=today(),ex=(name,sets,reps)=>({id:uid(),name,sets,reps});
- return{v:1,created:t,seenLevel:1,seenAch:[],lastBackup:null,sample:true,
-  settings:{protein:150,weekly:3,unit:'kg',rest:90,optDays:[6]},
-  workouts:[
-   {id:uid(),name:'Push',day:1,exercises:[ex('Bench press',3,'6–8'),ex('Overhead press',3,'8–10'),ex('Incline dumbbell press',3,'10'),ex('Lateral raise',3,'12–15'),ex('Tricep pushdown',3,'12')]},
-   {id:uid(),name:'Pull',day:3,exercises:[ex('Deadlift',3,'5'),ex('Lat pulldown',3,'8–10'),ex('Seated cable row',3,'10'),ex('Face pull',3,'15'),ex('Bicep curl',3,'12')]},
-   {id:uid(),name:'Legs',day:5,exercises:[ex('Back squat',3,'6–8'),ex('Romanian deadlift',3,'8–10'),ex('Leg press',3,'12'),ex('Leg curl',3,'12'),ex('Calf raise',3,'15')]},
-   {id:uid(),name:'Full body',day:6,exercises:[ex('Goblet squat',3,'10'),ex('Dumbbell bench press',3,'10'),ex('Pull-up',3,'max'),ex('Cable crunch',3,'15')]}
-  ],
+ return{v:1,planV:2,created:t,seenLevel:1,seenAch:[],lastBackup:null,sample:false,
+  settings:{protein:200,weekly:3,unit:'kg',rest:90,optDays:[6]},
+  workouts:plan(),
   sessions:[],active:null,protein:{},
   foods:[{name:'Protein shake',g:25},{name:'Chicken breast',g:31},{name:'Greek yoghurt',g:15},{name:'3 eggs',g:18}],
   habits:[{id:uid(),name:'Drink 2L water',created:t},{id:uid(),name:'Take creatine',created:t},{id:uid(),name:'Stretch 10 min',created:t}],
@@ -261,7 +265,9 @@ function defaults(){
 }
 function load(){let d=null;try{d=JSON.parse(localStorage.getItem(KEY))}catch(e){}
  if(!d||!d.v)return defaults();
- const base=defaults();const s=Object.assign(base,d);s.settings=Object.assign(defaults().settings,d.settings||{});return s}
+ const base=defaults();const s=Object.assign(base,d);s.settings=Object.assign(defaults().settings,d.settings||{});
+ if((d.planV||1)<2){s.planV=2;if(!s.sessions.length&&!s.active){s.workouts=plan();s.sample=false}if(s.settings.protein===150)s.settings.protein=200}
+ return s}
 let S=load();
 let saveOk=true;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));saveOk=true}catch(e){saveOk=false}}
